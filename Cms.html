@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>College Management System</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #172033;
+      background: #f2f5fa;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 32px 16px;
+    }
+
+    main {
+      width: min(760px, 100%);
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      text-align: center;
+    }
+
+    .intro {
+      margin: 0 0 24px;
+      color: #536078;
+      text-align: center;
+    }
+
+    form,
+    #results {
+      padding: 24px;
+      border: 1px solid #dce3ef;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 8px 24px rgb(28 44 75 / 7%);
+    }
+
+    fieldset {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin: 0;
+      padding: 20px 0;
+      border: 0;
+      border-bottom: 1px solid #e5eaf2;
+    }
+
+    legend {
+      padding: 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #bac5d6;
+      border-radius: 6px;
+      font: inherit;
+    }
+
+    input:focus {
+      border-color: #315fc4;
+      outline: 3px solid rgb(49 95 196 / 18%);
+    }
+
+    .actions {
+      padding-top: 20px;
+      text-align: right;
+    }
+
+    button {
+      padding: 11px 18px;
+      border: 0;
+      border-radius: 6px;
+      background: #2454b8;
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #193f91;
+    }
+
+    #results {
+      margin-top: 24px;
+    }
+
+    #results[hidden] {
+      display: none;
+    }
+
+    .details {
+      margin: 12px 0 20px;
+    }
+
+    .details:last-child {
+      margin-bottom: 0;
+    }
+
+    .details p {
+      margin: 6px 0;
+    }
+
+    @media (max-width: 560px) {
+      fieldset {
+        grid-template-columns: 1fr;
+      }
+
+      form,
+      #results {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>College Management System</h1>
+    <p class="intro">Enter the student and faculty details below.</p>
+
+    <form id="cms-form">
+      <fieldset>
+        <legend>Student Details</legend>
+        <label>
+          Name
+          <input name="studentName" type="text" autocomplete="name" required>
+        </label>
+        <label>
+          Age
+          <input name="studentAge" type="number" min="0" step="1" required>
+        </label>
+        <label>
+          Address
+          <input name="studentAddress" type="text" autocomplete="street-address" required>
+        </label>
+        <label>
+          Roll Number
+          <input name="rollNumber" type="text" required>
+        </label>
+        <label>
+          Course
+          <input name="course" type="text" required>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Faculty Details</legend>
+        <label>
+          Name
+          <input name="facultyName" type="text" required>
+        </label>
+        <label>
+          Age
+          <input name="facultyAge" type="number" min="0" step="1" required>
+        </label>
+        <label>
+          Address
+          <input name="facultyAddress" type="text" required>
+        </label>
+        <label>
+          Employee ID
+          <input name="employeeId" type="text" required>
+        </label>
+        <label>
+          Subject
+          <input name="subject" type="text" required>
+        </label>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit">Show Details</button>
+      </div>
+    </form>
+
+    <section id="results" aria-live="polite" hidden>
+      <h2>College Management System</h2>
+      <div class="details">
+        <h3>Student Details</h3>
+        <div id="student-result"></div>
+      </div>
+      <div class="details">
+        <h3>Faculty Details</h3>
+        <div id="faculty-result"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const form = document.querySelector("#cms-form");
+    const results = document.querySelector("#results");
+
+    function addDetail(container, label, value) {
+      const paragraph = document.createElement("p");
+      const term = document.createElement("strong");
+      term.textContent = `${label}: `;
+      paragraph.append(term, document.createTextNode(value));
+      container.append(paragraph);
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+
+      const data = new FormData(form);
+      const studentResult = document.querySelector("#student-result");
+      const facultyResult = document.querySelector("#faculty-result");
+      studentResult.replaceChildren();
+      facultyResult.replaceChildren();
+
+      [
+        ["Name", "studentName"],
+        ["Age", "studentAge"],
+        ["Address", "studentAddress"],
+        ["Roll Number", "rollNumber"],
+        ["Course", "course"]
+      ].forEach(([label, name]) => addDetail(studentResult, label, data.get(name)));
+
+      [
+        ["Name", "facultyName"],
+        ["Age", "facultyAge"],
+        ["Address", "facultyAddress"],
+        ["Employee ID", "employeeId"],
+        ["Subject", "subject"]
+      ].forEach(([label, name]) => addDetail(facultyResult, label, data.get(name)));
+
+      results.hidden = false;
+      results.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  </script>
+</body>
+</html>
